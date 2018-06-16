@@ -1,15 +1,7 @@
 using System;
 using UnityEngine;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Facepunch;
-using Rust.Steam;
-using System.Collections;
-using System.Globalization;
-using System.Runtime.InteropServices;
-using System.IO;
-using Facepunch.Precision;
+
 public class ZoomGUIRustNoWipe : uLink.MonoBehaviour
 {
     public static int width;
@@ -17,8 +9,8 @@ public class ZoomGUIRustNoWipe : uLink.MonoBehaviour
     public static bool CanWorkOrNot;
     public static bool onlytimemsg;
     public Texture2D Pointer;
-	  public static InventoryItem currentEquippedItem;
-	  public static InventoryItem GetItemEquipid;
+    public static InventoryItem currentEquippedItem;
+    public static InventoryItem GetItemEquipid;
     public static bool weaponON;
     public static bool oneshot;
     public static bool onlyMSG;
