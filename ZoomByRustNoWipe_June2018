@@ -1,0 +1,150 @@
+using Facepunch;
+using Rust;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
+using ZoomRustNoWipeServer;
+
+public class ZoomGUIRustNoWipe : uLink.MonoBehaviour
+{
+  public static int width;
+  public static int height;
+  public static bool CanWorkOrNot;
+  public static bool onlytimemsg;
+  public Texture2D Pointer;
+  public static bool oneshot;
+  public static bool onlyMSG;
+
+  public void OnGUI()
+  {
+    if (!(bool) ((UnityEngine.Object) PlayerClient.GetLocalPlayer()) || !(bool) ((UnityEngine.Object) PlayerClient.GetLocalPlayer().controllable))
+    {
+      ZoomGUIRustNoWipe.CanWorkOrNot = true;
+      ZoomGUIRustNoWipe.onlytimemsg = true;
+    }
+    else if (!ZoomRustNoWipe.On && ZoomGUIRustNoWipe.CanWorkOrNot)
+    {
+      Notice.Inventory("", "Console: ''rust.zoom''");
+      ZoomGUIRustNoWipe.CanWorkOrNot = false;
+    }
+    else if (ZoomRustNoWipe.On && ZoomGUIRustNoWipe.onlytimemsg)
+    {
+      Notice.Popup("", "Use console command: ''rust.zoom''", 6f);
+      ZoomGUIRustNoWipe.onlytimemsg = false;
+    }
+    else
+    {
+      if (ZoomRustNoWipe.On)
+      {
+        ZoomGUIRustNoWipe.width = Screen.width;
+        ZoomGUIRustNoWipe.height = Screen.height;
+        byte[] data = Convert.FromBase64String("iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4QgKEBA4MOfAnQAAAB1pVFh0Q29tbWVudAAAAAAAQ3JlYXRlZCB3aXRoIEdJTVBkLmUHAAAAk0lEQVQY042QsQ3CMBBF3zkoCNmgdBFl6vQskzUyAAOwhldJQe8RIpQeVxRQHI6MLAFfuuLfveL+BwvA89scqh3yNpxG6AdwRwC43yB4uF7UV8A5h2wLtQMRaDqo9zBPYOATSrKt7vpB/QZKKIeTDH/KpMfjUh7jorcVDL6EExR8lnqeNF3TadpHLOvByfZn4QbhBc5DOCDazOLnAAAAAElFTkSuQmCC");
+        this.Pointer = new Texture2D(10, 10, TextureFormat.RGB24, false);
+        this.Pointer.LoadImage(data);
+        GUI.DrawTexture(new Rect((float) (ZoomGUIRustNoWipe.width / 2 - 4), (float) (ZoomGUIRustNoWipe.height / 2 - 5), 8f, 8f), (Texture) this.Pointer, ScaleMode.StretchToFill);
+      }
+      if (Input.GetKeyDown(KeyCode.Alpha7))
+      {
+        if (!ZoomRustNoWipe.On)
+        {
+          Notice.Inventory("", "Console: ''rust.zoom''");
+          return;
+        }
+        this.ClearWeapon(PlayerClient.GetLocalPlayer().controllable.GetComponent<Inventory>());
+        this.MakeZoom(PlayerClient.GetLocalPlayer().controllable.GetComponent<HumanController>().GetComponentInChildren<CameraMount>(), 30f, 2);
+      }
+      if (Input.GetKeyDown(KeyCode.Alpha8))
+      {
+        if (!ZoomRustNoWipe.On)
+        {
+          Notice.Inventory("", "Console: ''rust.zoom''");
+          return;
+        }
+        this.ClearWeapon(PlayerClient.GetLocalPlayer().controllable.GetComponent<Inventory>());
+        this.MakeZoom(PlayerClient.GetLocalPlayer().controllable.GetComponent<HumanController>().GetComponentInChildren<CameraMount>(), 20f, 3);
+      }
+      if (Input.GetKeyDown(KeyCode.Alpha9))
+      {
+        if (!ZoomRustNoWipe.On)
+        {
+          Notice.Inventory("", "Console: ''rust.zoom''");
+          return;
+        }
+        this.ClearWeapon(PlayerClient.GetLocalPlayer().controllable.GetComponent<Inventory>());
+        this.MakeZoom(PlayerClient.GetLocalPlayer().controllable.GetComponent<HumanController>().GetComponentInChildren<CameraMount>(), 10f, 6);
+      }
+      if (Input.GetKeyDown(KeyCode.Alpha0))
+      {
+        if (!ZoomRustNoWipe.On)
+        {
+          Notice.Inventory("", "Console: ''rust.zoom''");
+          return;
+        }
+        this.ClearWeapon(PlayerClient.GetLocalPlayer().controllable.GetComponent<Inventory>());
+        this.MakeZoom(PlayerClient.GetLocalPlayer().controllable.GetComponent<HumanController>().GetComponentInChildren<CameraMount>(), 1f, 60);
+      }
+      if (Input.GetKeyUp(KeyCode.Mouse0))
+      {
+        ZoomGUIRustNoWipe.oneshot = true;
+        ZoomGUIRustNoWipe.onlyMSG = true;
+      }
+      if (!Input.GetKeyDown(KeyCode.Mouse0) || (UnityEngine.Object) ZoomGUIRustNoWipe.CheckWeapon(PlayerClient.GetLocalPlayer().controllable.GetComponent<Inventory>()) != (UnityEngine.Object) null)
+        return;
+      if (((double) Event.current.mousePosition.x == -10000.0 || (double) Event.current.mousePosition.y == -10000.0) && (ZoomGUIRustNoWipe.oneshot && ZoomRustNoWipe.On))
+      {
+        this.MakeSound(PlayerClient.GetLocalPlayer().controllable.GetComponent<Character>().transform.transform.position, (Character) null);
+        ZoomGUIRustNoWipe.oneshot = false;
+      }
+      RaycastHit2 hit;
+      if (ZoomGUIRustNoWipe.onlyMSG && Physics2.Raycast2((Ray3D) PlayerClient.GetLocalPlayer().controllable.GetComponent<Character>().controllable.character.eyesRay, out hit))
+      {
+        IDBase id = hit.id;
+        IDMain idMain = !(bool) ((UnityEngine.Object) id) ? (IDMain) null : id.idMain;
+        string str = new string(EnumerableToArray.ToArray<char>(Enumerable.Where<char>((IEnumerable<char>) idMain.ToString(), new Func<char, bool>(char.IsDigit))));
+        if ((bool) ((UnityEngine.Object) idMain))
+        {
+          NetEntityID unassigned = NetEntityID.unassigned;
+          if (NetEntityID.Get((UnityEngine.MonoBehaviour) idMain))
+          {
+            ConsoleWindow.singleton.RunCommand("chat.say " + str.ToString());
+            ZoomGUIRustNoWipe.onlyMSG = false;
+          }
+        }
+      }
+    }
+  }
+
+  public void MakeZoom(CameraMount componentInChildren, float zoomlevel, int multy)
+  {
+    if (!((UnityEngine.Object) componentInChildren != (UnityEngine.Object) null) || !((UnityEngine.Object) componentInChildren.GetComponent<HeadBob>() != (UnityEngine.Object) null))
+      return;
+    CameraFX mainCameraFx = CameraFX.mainCameraFX;
+    if ((UnityEngine.Object) mainCameraFx != (UnityEngine.Object) null)
+    {
+      mainCameraFx.SetFieldOfView(zoomlevel, 1f);
+      Notice.Inventory("", "Zoom: " + multy.ToString() + " x");
+    }
+  }
+
+  public void ClearWeapon(Inventory inve)
+  {
+    if (!((UnityEngine.Object) inve != (UnityEngine.Object) null) || inve.activeItem == null || !((UnityEngine.Object) inve.activeItem.datablock != (UnityEngine.Object) null))
+      return;
+    inve.activeItem.OnMovedTo(inve, 28);
+  }
+
+  public static ItemDataBlock CheckWeapon(Inventory inve)
+  {
+    if ((UnityEngine.Object) inve != (UnityEngine.Object) null && inve.activeItem != null && (UnityEngine.Object) inve.activeItem.datablock != (UnityEngine.Object) null)
+      return inve.activeItem.datablock;
+    return (ItemDataBlock) null;
+  }
+
+  public virtual void MakeSound(Vector3 point, Character shooterOrNull)
+  {
+    if ((bool) ((UnityEngine.Object) WeaponDataBlock._hitNotify) || Bundling.Load<AudioClip>("content/shared/sfx/hitnotification", out WeaponDataBlock._hitNotify))
+      SoundPool.PlayLocal(WeaponDataBlock._hitNotify, Camera.main.transform, Vector3.zero, 1f, 1);
+    int num = !(bool) ((UnityEngine.Object) shooterOrNull) ? 1 : (!shooterOrNull.stateFlags.aim ? 1 : 0);
+  }
+}
